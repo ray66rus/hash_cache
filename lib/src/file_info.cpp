@@ -22,7 +22,7 @@ file_info::file_info( fs::path const& file_name )
     try {
         m_digest = "";
         m_filename = file_name;
-        m_ts = fs::last_write_time( file_name ).time_since_epoch().count();
+        m_ts = fs::last_write_time( file_name );
 
     } catch( const fs::filesystem_error& e ) {
         throw __HASH_SNAPSHOT_IO_EXCEPTION( e.what(), file_name.string() );

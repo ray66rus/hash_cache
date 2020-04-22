@@ -36,7 +36,6 @@ SCENARIO( "working directory or snapshot removed during workflow", "[snapshot]" 
     }
 
     WHEN( "snapshot file removed before rescan" ) {
-
         fs::remove( working_dir / normal_snapshot_file_name() );
 
         REQUIRE_FALSE( fs::exists( working_dir / normal_snapshot_file_name() ) );
@@ -47,11 +46,11 @@ SCENARIO( "working directory or snapshot removed during workflow", "[snapshot]" 
     }
 
     WHEN( "working directory removed before save" ) {
-
         populate_test_directory( working_dir );
-        sh.scan_working_dir();
-        fs::remove_all( working_dir );
 
+        sh.scan_working_dir();
+
+        fs::remove_all( working_dir );
         REQUIRE_FALSE( fs::exists( working_dir ) );
 
         THEN( "throws exception" ) {

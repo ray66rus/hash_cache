@@ -20,17 +20,22 @@ add_library(obj_hash_snapshot
 
 set_property(TARGET obj_hash_snapshot PROPERTY POSITION_INDEPENDENT_CODE 1)
 
-find_package(OpenSSL REQUIRED)
-
 include(GenerateExportHeader)
 generate_export_header(obj_hash_snapshot
         BASE_NAME hash_snapshot
+        )
+
+find_package(OpenSSL REQUIRED)
+find_package(Boost 1.70.0
+        REQUIRED
+        COMPONENTS filesystem
         )
 
 set(INCLUDES
         ${CMAKE_CURRENT_BINARY_DIR}
         includes
         ${OPENSSL_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIRS}
         )
 
 include_directories(${INCLUDES})
@@ -60,7 +65,11 @@ target_link_libraries(hash_snapshot
         )
 endif()
 
-target_link_libraries(hash_snapshot PRIVATE OpenSSL::Crypto)
+target_link_libraries(hash_snapshot
+        PRIVATE
+        OpenSSL::Crypto
+        Boost::filesystem
+        )
 
 # STATIC
 add_library(hash_snapshot_static STATIC $<TARGET_OBJECTS:obj_hash_snapshot>)
@@ -74,7 +83,11 @@ target_compile_definitions(hash_snapshot_static
         HASH_SNAPSHOT_STATIC_DEFINE
         )
 
-target_link_libraries(hash_snapshot_static PRIVATE OpenSSL::Crypto)
+target_link_libraries(hash_snapshot_static
+        PRIVATE
+        OpenSSL::Crypto
+        Boost::filesystem
+        )
 
 # Tests
 enable_testing()

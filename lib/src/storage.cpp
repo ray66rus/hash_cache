@@ -8,7 +8,7 @@
 #include <hash_snapshot/exception.hpp>
 #include <hash_snapshot/storage.hpp>
 
-namespace fs = std::filesystem;
+namespace fs = boost::filesystem;
 
 namespace hashcache {
 
@@ -113,7 +113,7 @@ void snapshot_storage::add_entry( const std::string& file_name, file_info& data 
     add_entry( file_name, entry );
 }
 
-uint64_t snapshot_storage::get_saved_file_ts( const std::string& file_name )
+std::time_t snapshot_storage::get_saved_file_ts( const std::string& file_name )
 {
     auto const& entry = m_storage.at( file_name );
     return entry.ts;

@@ -30,15 +30,13 @@ void snapshot::scan_working_dir()
 
     m_last_scan_ts = _HASH_SNAPSHOT_TIMET_NOW;
 
-    fs::recursive_directory_iterator begin( m_working_dir,
-            m_follow_symlinks ? fs::directory_options::follow_directory_symlink : fs::directory_options::none );
-    fs::recursive_directory_iterator end;
+    fs::recursive_directory_iterator begin( m_working_dir ), end;
 
     for( auto i = begin; i != end; ++i ) {
         auto const& path = i->path();
 
-        if( path.filename().string()[ 0 ] == '.' ) {
-            i.disable_recursion_pending();
+        if( path.filename().string()[ 0 ] == '.' || ( !m_follow_symlinks && fs::is_symlink( path ) ) ) {
+            i.no_push();
             continue;
         }
 
@@ -114,10 +112,8 @@ void snapshot::revert_file_ts( const std::string& file_name )
     fs::path full_file_name = _full_file_name( file_name );
 
     try {
-        uint64_t ts = m_storage.get_saved_file_ts( file_name );
-        std::chrono::nanoseconds nsec{ ts };
-
-        fs::last_write_time( full_file_name, std::chrono::time_point<std::chrono::system_clock>( nsec )  );
+        std::time_t ts = m_storage.get_saved_file_ts( file_name );
+        fs::last_write_time( full_file_name, ts );
 
         file_info info( full_file_name );
         m_storage.update_entry_metadata( file_name, info );

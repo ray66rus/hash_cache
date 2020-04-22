@@ -7,6 +7,8 @@
 
 #include <hash_snapshot/hash_snapshot.hpp>
 
+namespace fs = boost::filesystem;
+
 #define FILE_EXCEPTION_MATCHER      Catch::Matchers::Predicate<hash_snapshot_exception>( \
                 [] ( hash_snapshot_exception const& e ) -> \
                 bool { return e.type() == hash_snapshot_exception::error_type::IO_ERROR; } \
@@ -17,10 +19,10 @@
                 bool { return e.type() == hash_snapshot_exception::error_type::PARSE_ERROR; } \
             )
 
-#define NORMAL_SNAPSHOT_SIZE    1010
-#define FIXED_SNAPSHOT_SIZE     938
+#define NORMAL_SNAPSHOT_SIZE    890
+#define FIXED_SNAPSHOT_SIZE     828
 
-extern const std::filesystem::path& current_test_dir();
+extern const fs::path& current_test_dir();
 
 extern void create_test_directory();
 extern void delete_test_directory();

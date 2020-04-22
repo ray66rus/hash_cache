@@ -6,12 +6,12 @@
 #include <thread>
 #include <string>
 
-namespace fs = std::filesystem;
+namespace fs = boost::filesystem;
 namespace hc = hashcache;
 
 static fs::path TEST_DIR = std::string( "_testdir_" );
-static const hc::snapshot_entry entry1( "6d616d6e9a09ddb55b590ed59cc865c9", 1581687087236012200, 0 );
-static const hc::snapshot_entry entry2( "b02e620a8f879bfcebb92357a6075c26", 1582740875437918431, 0 );
+static const hc::snapshot_entry entry1( "6d616d6e9a09ddb55b590ed59cc865c9", 1581687087, 0 );
+static const hc::snapshot_entry entry2( "b02e620a8f879bfcebb92357a6075c26", 1582740875, 0 );
 static const std::vector<fs::path> test_files {
     "test1.test", "test2.test", "Тест.test",
     "dir1/test11.test", "dir1/test12.test", "dir1/test13.test",
@@ -24,21 +24,21 @@ static const std::vector<fs::path> test_files {
 };
 
 static const std::vector<std::string> normal_snapshot_vector {
-    "2020-04-21 00:11:18.705167554 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/dir111/test1.test",
-    "2020-04-21 00:11:18.705167554 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test111.test",
-    "2020-04-21 00:11:18.705167554 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test112.test",
-    "2020-04-21 00:11:18.705167554 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/название каталога/test2.test",
-    "2020-04-21 00:11:18.705167554 f048f8e361e791722833784c1ad6a130 dir1/test11.test",
-    "2020-04-21 00:11:18.705167554 f048f8e361e791722833784c1ad6a130 dir1/test12.test",
-    "2020-04-21 00:11:18.705167554 f048f8e361e791722833784c1ad6a130 dir1/test13.test",
-    "2020-04-21 00:11:18.705167554 f048f8e361e791722833784c1ad6a130 dir2/test21.test",
-    "2020-04-21 00:11:18.705167554 f048f8e361e791722833784c1ad6a130 dir2/test22.test",
-    "2020-04-21 00:11:18.705167554 075417d4b62b52ed67dc1e8e5c3b8405 test1.test",
-    "2020-04-21 00:11:18.705167554 075417d4b62b52ed67dc1e8e5c3b8405 test2.test",
-    "2020-04-21 00:11:18.705167554 2fed5e1b3c52b7264ac2fc773de21862 Тест.test",
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/dir111/test1.test",
+    "2020-04-21 00:11:18 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test111.test",
+    "2020-04-21 00:11:18 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test112.test",
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/название каталога/test2.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir1/test11.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir1/test12.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir1/test13.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir2/test21.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir2/test22.test",
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 test1.test",
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 test2.test",
+    "2020-04-21 00:11:18 2fed5e1b3c52b7264ac2fc773de21862 Тест.test",
 };
 
-static const uint64_t snapshot_test_file_ts = 1587417078705167554; // 2020-04-21 00:11:18.705167554
+static const std::time_t snapshot_test_file_ts = 1587417078; // 2020-04-21 00:11:18
 
 const fs::path& current_test_dir() { return TEST_DIR; }
 
@@ -107,13 +107,13 @@ extern const hc::snapshot_entry& get_entry_1() { return entry1; }
 const fs::path get_file_path_for_entry_1() { return current_test_dir() / fs::path( "file1.dat" ); }
 extern const std::string get_string_for_entry_1()
 {
-        return "2020-02-14 16:31:27.236012200 6d616d6e9a09ddb55b590ed59cc865c9 " + get_file_path_for_entry_1().string();
+        return "2020-02-14 16:31:27 6d616d6e9a09ddb55b590ed59cc865c9 " + get_file_path_for_entry_1().string();
 }
 
 extern const hc::snapshot_entry& get_entry_2() { return entry2; }
 const fs::path get_file_path_for_entry_2() { return current_test_dir() / fs::path( "dir1/file1_1.txt" ); }
 extern const std::string get_string_for_entry_2() {
-    return "2020-02-26 21:14:35.437918431 b02e620a8f879bfcebb92357a6075c26 " + get_file_path_for_entry_2().string();
+    return "2020-02-26 21:14:35 b02e620a8f879bfcebb92357a6075c26 " + get_file_path_for_entry_2().string();
 }
 
 const fs::path minimal_snapshot_file_path() { return current_test_dir() / fs::path( ".hash_cache.txt" ); }
@@ -147,20 +147,19 @@ const fs::path create_entry_1_file()
 
 void change_file_ts( const std::string& file_name )
 {
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
-    fs::last_write_time( file_name, std::chrono::system_clock::now() );
+    std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
+    fs::last_write_time( file_name, std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() ) );
 }
 
 void revert_test_file_ts_to_default( const fs::path &file_name )
 {
-    std::chrono::nanoseconds nsec { snapshot_test_file_ts };
-    fs::last_write_time( file_name, std::chrono::time_point<std::chrono::system_clock>( nsec ) );
+    fs::last_write_time( file_name, snapshot_test_file_ts );
 }
 
 void change_file_contents( const fs::path& file_name, bool ensure_ts_change )
 {
     if( ensure_ts_change ) {
-        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
     }
 
     std::ofstream ofs( file_name, std::ofstream::app );

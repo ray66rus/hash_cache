@@ -6,8 +6,6 @@
 
 #include <hash_snapshot_export.h>
 
-namespace fs = std::filesystem;
-
 namespace hashcache {
 
 class snapshot {

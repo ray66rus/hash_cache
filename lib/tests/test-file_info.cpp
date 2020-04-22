@@ -45,7 +45,7 @@ TEST_CASE( "File info timestamp check", "[fileinfo]" ) {
     create_test_directory();
 
     const fs::path test_file_name = create_test_file_1();
-    uint64_t ts = fs::last_write_time( test_file_name ).time_since_epoch().count();
+    std::time_t ts = fs::last_write_time( test_file_name );
     file_info test_info( test_file_name );
 
     SECTION( "Timestamp validating" ) {
@@ -56,7 +56,7 @@ TEST_CASE( "File info timestamp check", "[fileinfo]" ) {
 
         change_file_contents( test_file_name, true );
 
-        ts = fs::last_write_time( test_file_name ).time_since_epoch().count();
+        ts = fs::last_write_time( test_file_name );
         REQUIRE( test_info.get_ts() < ts );
 
         REQUIRE( file_info( test_file_name ).get_ts() == ts );

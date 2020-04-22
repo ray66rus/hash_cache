@@ -14,7 +14,7 @@ TEST_CASE( "Storage basic init and load", "[storage]" ) {
 
         REQUIRE_NOTHROW( ss.init( minimal_snapshot_file_path() ) );
 
-        std::filesystem::remove( minimal_snapshot_file_path() );
+        fs::remove( minimal_snapshot_file_path() );
         REQUIRE_THROWS( ss.load() );
 
     }
@@ -24,8 +24,8 @@ TEST_CASE( "Storage basic init and load", "[storage]" ) {
         REQUIRE_NOTHROW( ss.init( minimal_snapshot_file_path() ) );
         REQUIRE( ss.size() == 0 );
         REQUIRE( ss.empty() );
-        REQUIRE( std::filesystem::is_regular_file( minimal_snapshot_file_path()) );
-        REQUIRE( std::filesystem::file_size(  minimal_snapshot_file_path() ) == 0 );
+        REQUIRE( fs::is_regular_file( minimal_snapshot_file_path()) );
+        REQUIRE( fs::file_size(  minimal_snapshot_file_path() ) == 0 );
 
     }
 

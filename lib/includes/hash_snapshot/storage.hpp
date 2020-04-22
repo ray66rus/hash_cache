@@ -30,7 +30,7 @@ class snapshot_storage {
 
         std::vector<std::string> const get_ts_changed_files_list();
         bool is_file_contens_changed( const std::string& file_name, const std::string& digest );
-        uint64_t get_saved_file_ts( const std::string& file_name );
+        std::time_t get_saved_file_ts( const std::string& file_name );
 
         void update_entry( const std::string& file_name, file_info& data ) { add_entry( file_name, data ); }
         void update_entry_metadata( const std::string& file_name, const file_info& data );
@@ -41,7 +41,7 @@ class snapshot_storage {
         void add_entry( const std::string& line );
         void add_entry( const std::string& file_name, const snapshot_entry& entry ) { m_storage[ file_name ] = entry; }
 
-        std::filesystem::path m_filename;
+        fs::path m_filename;
         std::map<std::string, hashcache::snapshot_entry> m_storage;
 };
 
