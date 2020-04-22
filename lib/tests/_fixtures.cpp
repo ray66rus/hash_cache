@@ -5,6 +5,14 @@
 #include <chrono>
 #include <thread>
 #include <string>
+#include <algorithm>
+#include <sstream>
+
+#ifdef _WIN32
+#define EOL_SEQUENCE "\r\n"
+#else
+#define EOL_SEQUENCE "\n"
+#endif
 
 namespace fs = boost::filesystem;
 namespace hc = hashcache;
@@ -23,6 +31,20 @@ static const std::vector<fs::path> test_files {
     "dir1/.invisible.test", "dir1/dir11/.invisible_dir/invisible.test"
 };
 
+static const std::vector<std::string> fixed_snapshot_vector {
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/dir111/test1.test",
+    "2020-04-21 00:11:18 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test111.test",
+    "2020-04-21 00:11:18 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test112.test",
+    "2020-04-22 23:55:44 6713843ae4e0c3ff4bb6aa8ce56ebc01 dir1/dir11/название каталога/test2.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir1/test12.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir1/test13.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir2/test21.test",
+    "2020-04-21 00:11:18 f048f8e361e791722833784c1ad6a130 dir2/test22.test",
+    "2020-04-22 23:55:44 4430ef7d49c5f2193402e587b34a8358 new_test_file.test",
+    "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 test2.test",
+    "2020-04-21 00:11:18 2fed5e1b3c52b7264ac2fc773de21862 Тест.test",
+};
+
 static const std::vector<std::string> normal_snapshot_vector {
     "2020-04-21 00:11:18 075417d4b62b52ed67dc1e8e5c3b8405 dir1/dir11/dir111/test1.test",
     "2020-04-21 00:11:18 fbfea27afc8f617f86b15b86d6dab0a6 dir1/dir11/test111.test",
@@ -38,7 +60,15 @@ static const std::vector<std::string> normal_snapshot_vector {
     "2020-04-21 00:11:18 2fed5e1b3c52b7264ac2fc773de21862 Тест.test",
 };
 
-static const std::time_t snapshot_test_file_ts = 1587417078; // 2020-04-21 00:11:18
+std::time_t snapshot_test_file_ts()
+{
+    std::stringstream ss( "2020-04-21 00:11:18" );
+
+    std::tm tm {};
+    ss >> std::get_time( &tm, "%Y-%m-%d %H:%M:%S" );
+
+    return std::mktime( &tm );
+}
 
 const fs::path& current_test_dir() { return TEST_DIR; }
 
@@ -152,7 +182,7 @@ void change_file_ts( const std::string& file_name )
 
 void revert_test_file_ts_to_default( const fs::path &file_name )
 {
-    fs::last_write_time( file_name, snapshot_test_file_ts );
+    fs::last_write_time( file_name, snapshot_test_file_ts() );
 }
 
 void change_file_contents( const fs::path& file_name, bool ensure_ts_change )
@@ -200,9 +230,24 @@ void create_normal_snapshot( fs::path const& file_name )
 {
     std::ofstream ofs( file_name.string() );
     for( auto& line: normal_snapshot_vector ) {
-        ofs << line << std::endl;
+        ofs << fs::path(line).lexically_normal().string() << std::endl;
     }
     ofs.close();
 }
 
 const fs::path& get_test_file_path( int num ) { return test_files[ num ]; }
+
+int _snapshot_size( std::vector<std::string> const& vec )
+{
+    std::stringstream ss;
+
+    std::for_each( vec.begin(), vec.end(), [ &ss ]( auto& s ) {
+        ss << s << EOL_SEQUENCE;
+    } );
+
+    return ss.str().length();
+}
+
+int normal_snapshot_size() { return _snapshot_size( normal_snapshot_vector ); }
+
+int fixed_snapshot_size() { return _snapshot_size( fixed_snapshot_vector ); }

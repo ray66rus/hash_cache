@@ -126,7 +126,7 @@ SCENARIO( "normal workflow - first run", "[snapshot]" ) {
                     sh.save();
 
                     THEN( "snapshot file has the right size ") {
-                        REQUIRE( fs::file_size( normal_snapshot_file_name() ) == NORMAL_SNAPSHOT_SIZE );
+                        REQUIRE( fs::file_size( normal_snapshot_file_name() ) == normal_snapshot_size() );
                     }
                 }
             }
@@ -204,7 +204,7 @@ SCENARIO( "normal workflow", "[snapshot]" ) {
                                     sh.save();
 
                                     THEN( "snapshot file has the right size ") {
-                                        REQUIRE( fs::file_size( normal_snapshot_file_name() ) == FIXED_SNAPSHOT_SIZE );
+                                        REQUIRE( fs::file_size( normal_snapshot_file_name() ) == fixed_snapshot_size() );
 
                                         AND_WHEN( "file loaded and directory rescanned" ) {
                                             snapshot sh( normal_snapshot_file_name().string() );
@@ -228,7 +228,7 @@ SCENARIO( "normal workflow", "[snapshot]" ) {
                                 sh.save();
 
                                 THEN( "snapshot file has the right size ") {
-                                    REQUIRE( fs::file_size( normal_snapshot_file_name() ) == FIXED_SNAPSHOT_SIZE );
+                                    REQUIRE( fs::file_size( normal_snapshot_file_name() ) == fixed_snapshot_size() );
                                 }
                             }
                         }

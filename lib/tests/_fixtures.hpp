@@ -19,9 +19,6 @@ namespace fs = boost::filesystem;
                 bool { return e.type() == hash_snapshot_exception::error_type::PARSE_ERROR; } \
             )
 
-#define NORMAL_SNAPSHOT_SIZE    890
-#define FIXED_SNAPSHOT_SIZE     828
-
 extern const fs::path& current_test_dir();
 
 extern void create_test_directory();
@@ -59,5 +56,7 @@ extern void revert_test_file_ts_to_default( const fs::path &file_name );
 
 extern const fs::path normal_snapshot_file_name();
 extern void create_normal_snapshot( fs::path const& file_name );
+extern int normal_snapshot_size();
+extern int fixed_snapshot_size();
 
 #endif
