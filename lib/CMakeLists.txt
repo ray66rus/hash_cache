@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_library(obj_hash_snapshot
         OBJECT
-        src/snapshot.cpp
         src/storage.cpp
         src/file_info.cpp
         src/entry.cpp
+        src/snapshot.cpp
         includes/hash_snapshot/hash_snapshot.hpp
         includes/hash_snapshot/storage.hpp
         includes/hash_snapshot/exception.hpp
@@ -68,6 +68,11 @@ add_library(hash_snapshot_static STATIC $<TARGET_OBJECTS:obj_hash_snapshot>)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 target_link_libraries(hash_snapshot_static PUBLIC "stdc++fs")
 endif()
+
+target_compile_definitions(hash_snapshot_static
+        PUBLIC
+        HASH_SNAPSHOT_STATIC_DEFINE
+        )
 
 target_link_libraries(hash_snapshot_static PRIVATE OpenSSL::Crypto)
 
