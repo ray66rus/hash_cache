@@ -19,7 +19,7 @@ snapshot::snapshot( const fs::path& file_name, const fs::path& dir, bool follow_
     m_follow_symlinks = follow_symlinks;
     m_last_scan_ts = 0;
 
-    m_working_dir = fs::path( dir );
+    m_working_dir = dir;
 
     m_storage.init( _full_file_name( file_name ) );
 }

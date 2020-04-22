@@ -4,8 +4,6 @@
 #include <string>
 #include <exception>
 
-#include <hash_snapshot_export.h>
-
 namespace hashcache {
 
 class hash_snapshot_exception: public std::exception {
