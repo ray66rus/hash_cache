@@ -14,7 +14,7 @@
 
 namespace hashcache {
 
-snapshot::snapshot( const fs::path& file_name, const fs::path& dir, bool follow_symlinks )
+snapshot::snapshot( std::string const& file_name, std::string const& dir, bool follow_symlinks )
 {
     m_follow_symlinks = follow_symlinks;
     m_last_scan_ts = 0;

@@ -22,7 +22,7 @@ SCENARIO( "working directory or snapshot removed during workflow", "[snapshot]" 
 
     REQUIRE( fs::is_directory( working_dir ) );
 
-    snapshot sh( normal_snapshot_file_name(), working_dir );
+    snapshot sh( normal_snapshot_file_name().string(), working_dir.string() );
 
     WHEN( "working directory removed before rescan" ) {
 
@@ -31,7 +31,7 @@ SCENARIO( "working directory or snapshot removed during workflow", "[snapshot]" 
         REQUIRE_FALSE( fs::exists( working_dir ) );
 
         THEN( "rescan throws exception" ) {
-            REQUIRE_THROWS_AS( sh.scan_working_dir(), std::ios_base::failure );
+            REQUIRE_THROWS_AS( sh.scan_working_dir(), fs::filesystem_error );
         }
     }
 
@@ -41,7 +41,7 @@ SCENARIO( "working directory or snapshot removed during workflow", "[snapshot]" 
         REQUIRE_FALSE( fs::exists( working_dir / normal_snapshot_file_name() ) );
 
         THEN( "throws exception" ) {
-            REQUIRE_THROWS_AS( sh.scan_working_dir(), std::ios_base::failure );
+            REQUIRE_THROWS_AS( sh.scan_working_dir(), fs::filesystem_error );
         }
     }
 
@@ -65,7 +65,7 @@ SCENARIO( "logical workflow errors", "[snapshot]" ) {
 
     create_test_directory();
 
-    snapshot sh( normal_snapshot_file_name() );
+    snapshot sh( normal_snapshot_file_name().string() );
 
     GIVEN( "no scan done" ) {
         WHEN( "trying to get modified files list" ) {
@@ -109,7 +109,7 @@ SCENARIO( "normal workflow - first run", "[snapshot]" ) {
 
     GIVEN( "working directory is not empty but doesn't have snapshot file" ) {
 
-        snapshot sh( normal_snapshot_file_name() );
+        snapshot sh( normal_snapshot_file_name().string() );
 
         REQUIRE( fs::exists( normal_snapshot_file_name() ) );
 
@@ -152,7 +152,7 @@ SCENARIO( "normal workflow", "[snapshot]" ) {
     GIVEN( "working directory is not empty and has valid snapshot file" ) {
 
         create_normal_snapshot( normal_snapshot_file_name() );
-        snapshot sh( normal_snapshot_file_name() );
+        snapshot sh( normal_snapshot_file_name().string() );
 
         AND_GIVEN( "some changes done ") {
 
@@ -207,7 +207,7 @@ SCENARIO( "normal workflow", "[snapshot]" ) {
                                         REQUIRE( fs::file_size( normal_snapshot_file_name() ) == FIXED_SNAPSHOT_SIZE );
 
                                         AND_WHEN( "file loaded and directory rescanned" ) {
-                                            snapshot sh( normal_snapshot_file_name() );
+                                            snapshot sh( normal_snapshot_file_name().string() );
                                             sh.scan_working_dir();
 
                                             THEN( "modified file list is empty" ) {

@@ -57,14 +57,6 @@ target_include_directories(hash_snapshot
         INTERFACE ${INCLUDES}
         )
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-target_link_libraries(hash_snapshot
-        PUBLIC
-        "stdc++fs"
-        "-Wl,--exclude-libs,ALL"
-        )
-endif()
-
 target_link_libraries(hash_snapshot
         PRIVATE
         OpenSSL::Crypto
@@ -73,10 +65,6 @@ target_link_libraries(hash_snapshot
 
 # STATIC
 add_library(hash_snapshot_static STATIC $<TARGET_OBJECTS:obj_hash_snapshot>)
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-target_link_libraries(hash_snapshot_static PUBLIC "stdc++fs")
-endif()
 
 target_compile_definitions(hash_snapshot_static
         PUBLIC

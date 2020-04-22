@@ -5,12 +5,7 @@ using namespace hashcache;
 static fs::path TEST_DIR = std::string( "" );
 
 TEST_CASE( "File info init not found processing", "[fileinfo]" ) {
-
-    REQUIRE_THROWS_MATCHES( file_info( "_NONEXISTENT_" ),
-                hash_snapshot_exception,
-                FILE_EXCEPTION_MATCHER
-    );
-
+    REQUIRE_THROWS_AS( file_info( "_NONEXISTENT_" ), fs::filesystem_error );
 }
 
 TEST_CASE( "File info digest calculation", "[fileinfo]" ) {

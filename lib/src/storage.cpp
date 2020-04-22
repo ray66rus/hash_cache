@@ -26,18 +26,15 @@ void snapshot_storage::_create_snapshot_file()
     std::ofstream ofs;
 
     ofs.exceptions( std::ios_base::failbit | std::ios_base::badbit );
-    ofs.open( m_filename );
+    ofs.open( m_filename.string() );
     ofs.close();
 }
 
 void snapshot_storage::load()
 {
     std::string line;
-    std::ifstream ifs;
+    std::ifstream ifs( fs::canonical( m_filename ).string() );
 
-    ifs.exceptions( std::ios_base::failbit | std::ios_base::badbit );
-
-    ifs.open( m_filename );
     while( ifs.peek() != EOF ) {
         std::getline( ifs, line );
         add_entry( line );
@@ -93,7 +90,7 @@ void snapshot_storage::save( std::time_t min_last_seen )
     std::ofstream ofs;
 
     ofs.exceptions( std::ofstream::badbit | std::ofstream::failbit );
-    ofs.open( m_filename, std::ios_base::trunc );
+    ofs.open( m_filename.string(), std::ios_base::trunc );
 
     for( auto const& it: m_storage ) {
         auto const& file_name = it.first;

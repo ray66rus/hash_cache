@@ -9,9 +9,4 @@ add_executable(hashcache hashcache.cpp)
 
 add_subdirectory(lib)
 
-find_package(Boost 1.70.0
-        REQUIRED
-        COMPONENTS system
-        )
-
-target_link_libraries(hashcache hash_snapshot Boost::system)
+target_link_libraries(hashcache hash_snapshot)

@@ -58,7 +58,7 @@ void delete_test_directory()
 const fs::path create_test_file_1()
 {
     fs::path file_path = current_test_dir() / "test1.txt";
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
 
     ofs << std::setfill( '1' ) << std::setw( 150000 ) << "";
     ofs.close();
@@ -70,7 +70,7 @@ const fs::path create_test_file_2()
 {
     fs::path file_path = current_test_dir() / "test2.txt";
 
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
     ofs << std::setfill( '2' ) << std::setw( 100 ) << "";
     ofs.close();
 
@@ -79,10 +79,9 @@ const fs::path create_test_file_2()
 
 const fs::path create_test_file_3()
 {
-    fs::path file_path = current_test_dir()
-     / "test3.txt";
+    fs::path file_path = current_test_dir() / "test3.txt";
 
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
     ofs << std::setfill( '3' ) << std::setw( 100 ) << "";
     ofs.close();
 
@@ -95,7 +94,7 @@ const fs::path create_empty_file()
 {
     fs::path file_path = current_test_dir() / "empty.txt";
 
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
     ofs.close();
 
     return file_path;
@@ -120,7 +119,7 @@ const fs::path minimal_snapshot_file_path() { return current_test_dir() / fs::pa
 
 void create_minmal_snapshot()
 {
-    std::ofstream ofs( minimal_snapshot_file_path() );
+    std::ofstream ofs( minimal_snapshot_file_path().string() );
     ofs << get_string_for_entry_1() << std::endl;
     ofs << get_string_for_entry_2() << std::endl;
     ofs.close();
@@ -128,7 +127,7 @@ void create_minmal_snapshot()
 
 void create_problem_snapshot()
 {
-    std::ofstream ofs( minimal_snapshot_file_path() );
+    std::ofstream ofs( minimal_snapshot_file_path().string() );
     ofs << "some random garbage" << std::endl;
     ofs << get_string_for_entry_2() << std::endl;
     ofs.close();
@@ -137,7 +136,7 @@ void create_problem_snapshot()
 const fs::path create_entry_1_file()
 {
     fs::path file_path = get_file_path_for_entry_1();
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
 
     ofs << std::setfill( '0' ) << std::setw( 10 ) << "";
     ofs.close();
@@ -162,7 +161,7 @@ void change_file_contents( const fs::path& file_name, bool ensure_ts_change )
         std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
     }
 
-    std::ofstream ofs( file_name, std::ofstream::app );
+    std::ofstream ofs( file_name.string(), std::ofstream::app );
     ofs << "1";
     ofs.close();
 }
@@ -190,7 +189,7 @@ void populate_test_directory( fs::path working_dir )
 void create_test_file( fs::path const& file_path )
 {
     std::string fname = file_path.filename().string();
-    std::ofstream ofs( file_path );
+    std::ofstream ofs( file_path.string() );
     ofs << std::setfill( fname[ 0 ] ) << std::setw( fname.length() * 10000 ) << "";
     ofs.close();
 }
@@ -199,7 +198,7 @@ const fs::path normal_snapshot_file_name() { return ".tmp_snapshot_file"; }
 
 void create_normal_snapshot( fs::path const& file_name )
 {
-    std::ofstream ofs( file_name );
+    std::ofstream ofs( file_name.string() );
     for( auto& line: normal_snapshot_vector ) {
         ofs << line << std::endl;
     }

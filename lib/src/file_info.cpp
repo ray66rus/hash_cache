@@ -11,24 +11,13 @@
 
 #define STREAM_BUFFSIZE 16000
 
-#define __HASH_SNAPSHOT_IO_EXCEPTION( MSG, FNAME )    hash_snapshot_exception( \
-            std::string( MSG ) + " (" + FNAME + ")", \
-            hash_snapshot_exception::error_type::IO_ERROR )
-
 namespace hashcache {
 
 file_info::file_info( fs::path const& file_name )
 {
-    try {
-        m_digest = "";
-        m_filename = file_name;
-        m_ts = fs::last_write_time( file_name );
-
-    } catch( const fs::filesystem_error& e ) {
-        throw __HASH_SNAPSHOT_IO_EXCEPTION( e.what(), file_name.string() );
-    } catch ( const std::ifstream::failure& e ) {
-        throw __HASH_SNAPSHOT_IO_EXCEPTION( e.what(), file_name.string() );
-    }
+    m_digest = "";
+    m_filename = file_name;
+    m_ts = fs::last_write_time( file_name );
 }
 
 const std::string& file_info::get_digest()
@@ -63,12 +52,7 @@ void file_info::_generate_digest_byte_array( fs::path const& file_name, unsigned
     std::ifstream ifs;
     MD5_CTX md5Context;
 
-    ifs.exceptions( std::ifstream::badbit );
-    ifs.open( file_name, std::ifstream::binary );
-
-    if ( !ifs.good() ) {
-        throw __HASH_SNAPSHOT_IO_EXCEPTION( "Can't open file ", file_name.string() );
-    }
+    ifs.open( fs::canonical( file_name ).string(), std::ifstream::binary );
 
     // Calculate digest
     MD5_Init( &md5Context );
