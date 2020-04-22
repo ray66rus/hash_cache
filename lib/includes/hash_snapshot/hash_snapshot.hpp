@@ -12,8 +12,8 @@ namespace hashcache {
 
 class snapshot {
     public:
-        snapshot( const fs::path& file_name ): snapshot( file_name, ".", true ) {};
-        HASH_SNAPSHOT_EXPORT snapshot( const fs::path& file_name, const fs::path& dir, bool follow_symlinks = true );
+        snapshot( const fs::path& file_name ): snapshot( file_name, fs::path("."), false ) {};
+        HASH_SNAPSHOT_EXPORT snapshot( const fs::path& file_name, const fs::path& dir, bool follow_symlinks = false );
 
         HASH_SNAPSHOT_EXPORT void scan_working_dir();
 
