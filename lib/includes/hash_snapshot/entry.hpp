@@ -1,8 +1,8 @@
 #ifndef CPP_HASHCACHE_SNAPSHOT_ENTRY_HPP_
 #define CPP_HASHCACHE_SNAPSHOT_ENTRY_HPP_
 
-#include <string>
 #include <ctime>
+#include <string>
 
 namespace hashcache {
 
@@ -13,16 +13,17 @@ class shapshot_entry_string {
         shapshot_entry_string( const std::string& line );
         shapshot_entry_string( const std::string& file_name, const snapshot_entry& entry );
 
-        std::time_t get_ts() const { return m_ts; }
+        int64_t get_ts() const { return m_ts; }
         const std::string& get_digest() const { return m_digest; }
         const std::string& get_filename() const { return m_filename; }
 
         operator std::string() const;
 
     private:
-        static std::time_t _ts_from_string( const std::string& ts_str );
+        static int64_t _ts_from_string( const std::string& ts_str );
+        static bool _datetime_format_ok( std::string const& date, std::string const& time );
 
-        std::time_t m_ts;
+        int64_t m_ts;
         std::string m_digest;
         std::string m_filename;
 };
@@ -30,14 +31,14 @@ class shapshot_entry_string {
 struct snapshot_entry {
     snapshot_entry(): ts( 0 ), last_seen( 0 ), ts_changed ( false ) {};
 
-    snapshot_entry( const std::string& digest, std::time_t ts, std::time_t last_seen ):
+    snapshot_entry( const std::string& digest, int64_t ts, std::time_t last_seen ):
         digest( digest ), ts( ts ), last_seen( last_seen ), ts_changed( false ) {};
 
     snapshot_entry( const shapshot_entry_string& e_str ):
         snapshot_entry( e_str.get_digest(), e_str.get_ts(), 0 ) {};
 
     std::string digest;
-    std::time_t ts;
+    int64_t ts;
 
     std::time_t last_seen;
     bool ts_changed;

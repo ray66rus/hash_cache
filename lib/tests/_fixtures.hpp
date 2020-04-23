@@ -7,7 +7,7 @@
 
 #include <hash_snapshot/hash_snapshot.hpp>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 #define FILE_EXCEPTION_MATCHER      Catch::Matchers::Predicate<hash_snapshot_exception>( \
                 [] ( hash_snapshot_exception const& e ) -> \

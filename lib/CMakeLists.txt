@@ -26,16 +26,11 @@ generate_export_header(obj_hash_snapshot
         )
 
 find_package(OpenSSL REQUIRED)
-find_package(Boost 1.70.0
-        REQUIRED
-        COMPONENTS filesystem
-        )
 
 set(INCLUDES
         ${CMAKE_CURRENT_BINARY_DIR}
         includes
         ${OPENSSL_INCLUDE_DIR}
-        ${Boost_INCLUDE_DIRS}
         )
 
 include_directories(${INCLUDES})
@@ -60,11 +55,22 @@ target_include_directories(hash_snapshot
 target_link_libraries(hash_snapshot
         PRIVATE
         OpenSSL::Crypto
-        Boost::filesystem
         )
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+target_link_libraries(hash_snapshot
+        PUBLIC
+        "stdc++fs"
+        "-Wl,--exclude-libs,ALL"
+        )
+endif()
 
 # STATIC
 add_library(hash_snapshot_static STATIC $<TARGET_OBJECTS:obj_hash_snapshot>)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+target_link_libraries(hash_snapshot_static PUBLIC "stdc++fs")
+endif()
 
 target_compile_definitions(hash_snapshot_static
         PUBLIC
@@ -74,7 +80,6 @@ target_compile_definitions(hash_snapshot_static
 target_link_libraries(hash_snapshot_static
         PRIVATE
         OpenSSL::Crypto
-        Boost::filesystem
         )
 
 # Tests

@@ -19,7 +19,7 @@ TEST_CASE( "Snapshot entry_string/entry creation", "[entry]" ) {
                     PARSER_EXCEPTION_MATCHER
         );
 
-        REQUIRE_THROWS_MATCHES( shapshot_entry_string( "2020-02-14 16:31:27 digest" ),
+        REQUIRE_THROWS_MATCHES( shapshot_entry_string( "2020-02-14 16:31:27.123456 digest" ),
                     hash_snapshot_exception,
                     PARSER_EXCEPTION_MATCHER
         );
@@ -34,8 +34,18 @@ TEST_CASE( "Snapshot entry_string/entry creation", "[entry]" ) {
                     PARSER_EXCEPTION_MATCHER
         );
 
-        REQUIRE_NOTHROW( shapshot_entry_string( "2020-02-14 16:31:27 digest filename" ) );
-        REQUIRE_NOTHROW( shapshot_entry_string( "2020-02-14 16:31:27 digest filename with spaces" ) );
+        REQUIRE_THROWS_MATCHES( shapshot_entry_string( "2020-02-14 16:31:27.12345678 digest filename" ),
+                    hash_snapshot_exception,
+                    PARSER_EXCEPTION_MATCHER
+        );
+
+        REQUIRE_THROWS_MATCHES( shapshot_entry_string( "2020-02-14 16:31:27.123 digest filename" ),
+                    hash_snapshot_exception,
+                    PARSER_EXCEPTION_MATCHER
+        );
+
+        REQUIRE_NOTHROW( shapshot_entry_string( "2020-02-14 16:31:27.123456 digest filename" ) );
+        REQUIRE_NOTHROW( shapshot_entry_string( "2020-02-14 16:31:27.123456 digest filename with spaces" ) );
 
     }
 
