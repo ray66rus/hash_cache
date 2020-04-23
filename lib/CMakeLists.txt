@@ -85,3 +85,19 @@ target_link_libraries(hash_snapshot_static
 # Tests
 enable_testing()
 add_subdirectory(tests)
+
+# System-wide installation
+install(TARGETS hash_snapshot DESTINATION lib)
+
+install(FILES
+        includes/hash_snapshot/hash_snapshot.hpp
+        includes/hash_snapshot/storage.hpp
+        includes/hash_snapshot/exception.hpp
+        includes/hash_snapshot/file_info.hpp
+        includes/hash_snapshot/entry.hpp
+
+        DESTINATION
+        include/hash_snapshot
+        )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/hash_snapshot_export.h DESTINATION include)
