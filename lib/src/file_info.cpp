@@ -19,7 +19,7 @@
 
 namespace chrono = std::chrono;
 
-#define STREAM_BUFFSIZE 16000
+#define STREAM_BUFFSIZE 16384
 
 namespace hashcache {
 
@@ -74,13 +74,12 @@ void file_info::_generate_digest_byte_array( fs::path const& file_name, unsigned
     MD5_CTX md5Context;
     MD5_Init( &md5Context );
 
+    std::unique_ptr<char> buffer( new char[ STREAM_BUFFSIZE ] );
     std::ifstream ifs( fs::canonical( file_name ).string(), std::ifstream::binary );
-
-    char buffer[ STREAM_BUFFSIZE ] = { 0 };
     while( ifs.good() ) {
-        ifs.read( buffer, STREAM_BUFFSIZE );
+        ifs.read( buffer.get(), STREAM_BUFFSIZE );
 
-        MD5_Update( &md5Context, buffer, ifs.gcount() );
+        MD5_Update( &md5Context, buffer.get(), ifs.gcount() );
     }
     ifs.close();
 
