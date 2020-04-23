@@ -1,4 +1,3 @@
-#include <cerrno>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
@@ -26,15 +25,28 @@ namespace hashcache {
 
 file_info::file_info( fs::path const& file_name )
 {
-    m_digest = "";
-    m_filename = file_name;
-    m_ts = last_write_time( file_name );
+    try {
+        m_digest = "";
+        m_filename = file_name;
+        m_ts = last_write_time( file_name );
+    } catch( fs::filesystem_error const &e ) {
+        throw hash_snapshot_exception( e.what(), hash_snapshot_exception::error_type::IO_ERROR );
+    }
 }
 
 const std::string& file_info::get_digest()
 {
-    if( m_digest == "" ) {
+    if( m_digest != "" ) {
+        return m_digest;
+    }
+
+    try {
         _create_digest();
+    } catch ( hash_snapshot_exception ) {
+        throw;
+    } catch( std::exception const& e ) {
+        throw hash_snapshot_exception( std::string( "Unknown error while creating the file digest: " ) + e.what(),
+            hash_snapshot_exception::error_type::UNKNWON_ERROR );
     }
 
     return m_digest;
@@ -59,15 +71,12 @@ void file_info::_create_digest()
 
 void file_info::_generate_digest_byte_array( fs::path const& file_name, unsigned char* digest_buf )
 {
-    char buffer[ STREAM_BUFFSIZE ] = { 0 };
-    std::ifstream ifs;
     MD5_CTX md5Context;
-
-    ifs.open( fs::canonical( file_name ).string(), std::ifstream::binary );
-
-    // Calculate digest
     MD5_Init( &md5Context );
 
+    std::ifstream ifs( fs::canonical( file_name ).string(), std::ifstream::binary );
+
+    char buffer[ STREAM_BUFFSIZE ] = { 0 };
     while( ifs.good() ) {
         ifs.read( buffer, STREAM_BUFFSIZE );
 
@@ -108,24 +117,12 @@ int64_t file_info::last_write_time( fs::path const& file_name )
 
     WIN32_FILE_ATTRIBUTE_DATA raw_info;
 
-    if (GetFileAttributesExA(file_name.string().c_str(), GetFileExInfoStandard, &raw_info)) {
-
-        int64_t msec_int = win_filetime_to_ms_from_epoch(raw_info.ftLastWriteTime);
-
-
-        // 100nanoseconds since unix epoch + epoch offset difference of filetime
-        chrono::microseconds msec{ msec_int };
-        chrono::time_point<chrono::system_clock> tp(msec);
-        std::time_t tt2 = chrono::system_clock::to_time_t(tp);
-        std::cerr << "CTIME IS " << std::put_time(std::localtime(&tt2), "%Y-%m-%d %H:%M:%S.") << std::setw(6) << std::setfill('0') << ( msec_int % 1000000 ) << std::endl;
-
-        return msec_int;
+    if( !::GetFileAttributesExA( file_name.string().c_str(), GetFileExInfoStandard, &raw_info ) ) {
+        auto ec = std::error_code( ::GetLastError(), std::system_category() );
+        throw fs::filesystem_error( "can't get file attributes", file_name.string(), ec );
     }
-    else {
-//        auto e = std::exception;
-//        throw e;
-        std::cerr << "AY NO!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-    }
+
+    return win_filetime_to_ms_from_epoch(raw_info.ftLastWriteTime);
 
 #else
 
@@ -139,21 +136,27 @@ int64_t file_info::last_write_time( fs::path const& file_name )
 void file_info::last_write_time(fs::path const& file_name, int64_t new_time)
 {
 #ifdef _WIN32
-    HANDLE file_h = CreateFile(file_name.string().c_str(),
+
+    HANDLE file_h = ::CreateFile(file_name.string().c_str(),
         FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE,
         NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (file_h == INVALID_HANDLE_VALUE) {
-        return;
+    if( file_h == INVALID_HANDLE_VALUE ) {
+        auto ec = std::error_code( ::GetLastError(), std::system_category() );
+        throw fs::filesystem_error( "can't open file for setting time", file_name.string(), ec );
+    }
 
     FILETIME ft;
     ms_from_epoch_to_win_filetime(new_time, ft);
 
-    if (!SetFileTime(file_h, (LPFILETIME)NULL, (LPFILETIME)NULL, &ft)) {
+    if( !::SetFileTime(file_h, (LPFILETIME)NULL, (LPFILETIME)NULL, &ft ) ) {
         CloseHandle(file_h);
-        return;
+        auto ec = std::error_code( ::GetLastError(), std::system_category() );
+        throw fs::filesystem_error( "can't open file for setting time", file_name.string(), ec );
     }
+
     CloseHandle(file_h);
+
 #else
 
     std::chrono::microseconds msec{ new_time };

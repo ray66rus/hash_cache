@@ -31,39 +31,48 @@ void snapshot::scan_working_dir()
     m_last_scan_ts = _HASH_SNAPSHOT_TIMET_NOW;
 
     fs::recursive_directory_iterator begin( m_working_dir,
-            m_follow_symlinks ? fs::directory_options::follow_directory_symlink : fs::directory_options::none );
+            ( m_follow_symlinks ? fs::directory_options::follow_directory_symlink : fs::directory_options::none ) |
+            fs::directory_options::skip_permission_denied );
+
     fs::recursive_directory_iterator end;
 
     for( auto i = begin; i != end; ++i ) {
         auto const& path = i->path();
+        std::error_code ec;
 
-        if( path.filename().string()[ 0 ] == '.' ) {
-            i.disable_recursion_pending();
+        try {
+            if ( path.filename().string()[ 0 ] == '.' ) {
+                i.disable_recursion_pending();
+                continue;
+            }
+
+            if( fs::is_directory( path, ec ) ) {
+                continue;
+            } else if( ec ) {
+                std::cerr << "Can't check data for path " << path << ": " << ec.message() << std::endl;
+                continue;
+            }
+
+            _update_meta_or_create_entry( path );
+
+        } catch( hash_snapshot_exception const& e ) {
+            std::cerr << "Can't get info for file " << path << ". " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "Can't process filesystem path for unknown reason" << std::endl;
             continue;
         }
-
-        if( fs::is_directory( path ) ) {
-            continue;
-        }
-
-        _update_meta_or_create_entry( path );
     }
 }
 
 void snapshot::_update_meta_or_create_entry( fs::path const& path )
 {
+    file_info info( path );
+    auto storage_key = path.lexically_relative( m_working_dir ).string();
+
     try {
-        file_info info( path );
-        auto storage_key = path.lexically_relative( m_working_dir ).string();
-
-        try {
-            m_storage.update_entry_metadata( storage_key, info );
-        } catch( std::out_of_range ) {
-            m_storage.add_entry( storage_key, info );
-        }
-
-    } catch( hash_snapshot_exception const& e ) {
-        std::cerr << "Can't get info for file " << path << ". " << e.what() << std::endl;
+        m_storage.update_entry_metadata( storage_key, info );
+    } catch( std::out_of_range ) {
+        m_storage.add_entry( storage_key, info );
     }
 }
 

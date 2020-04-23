@@ -8,7 +8,7 @@ namespace hashcache {
 
 class hash_snapshot_exception: public std::exception {
     public:
-        enum class error_type { IO_ERROR, PARSE_ERROR, DIGEST_ERROR };
+        enum class error_type { IO_ERROR, PARSE_ERROR, DIGEST_ERROR, UNKNWON_ERROR };
 
         explicit hash_snapshot_exception( const std::string& msg, error_type type ):
             m_error_message( msg ), m_error_type( type ) {};
