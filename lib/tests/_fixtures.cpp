@@ -19,8 +19,6 @@ namespace chrono = std::chrono;
 namespace hc = hashcache;
 
 static fs::path TEST_DIR = std::string( "_testdir_" );
-static const hc::snapshot_entry entry1( "6d616d6e9a09ddb55b590ed59cc865c9", 1581687087236012, 0 );
-static const hc::snapshot_entry entry2( "b02e620a8f879bfcebb92357a6075c26", 1582740875437918, 0 );
 static const std::vector<fs::path> test_files {
     "test1.test", "test2.test", "Тест.test",
     "dir1/test11.test", "dir1/test12.test", "dir1/test13.test",
@@ -61,10 +59,9 @@ static const std::vector<std::string> normal_snapshot_vector {
     "2020-04-21 00:11:18.705167 2fed5e1b3c52b7264ac2fc773de21862 Тест.test",
 };
 
-int64_t snapshot_test_file_ts()
+int64_t snapshot_ts_to_int64( std::string const& datetime, int64_t msec )
 {
-    std::stringstream ss( "2020-04-21 00:11:18" );
-    int64_t msec = 705167;
+    std::stringstream ss( datetime );
 
     std::tm tm {};
     ss >> std::get_time( &tm, "%Y-%m-%d %H:%M:%S" );
@@ -74,6 +71,8 @@ int64_t snapshot_test_file_ts()
 
     return ms_since_epoch.count() + msec;
 }
+
+int64_t snapshot_test_file_ts() { return snapshot_ts_to_int64( "2020-04-21 00:11:18", 705167 ); }
 
 const fs::path& current_test_dir() { return TEST_DIR; }
 
@@ -137,15 +136,23 @@ const fs::path create_empty_file()
 
 const std::string empty_file_digest() { return "d41d8cd98f00b204e9800998ecf8427e"; }
 
-extern const hc::snapshot_entry& get_entry_1() { return entry1; }
 const fs::path get_file_path_for_entry_1() { return current_test_dir() / fs::path( "file1.dat" ); }
+extern const hc::snapshot_entry get_entry_1()
+{
+    int64_t ts = snapshot_ts_to_int64( "2020-02-14 16:31:27", 236012 );
+    return hc::snapshot_entry( "6d616d6e9a09ddb55b590ed59cc865c9", ts, 0 );
+}
 extern const std::string get_string_for_entry_1()
 {
         return "2020-02-14 16:31:27.236012 6d616d6e9a09ddb55b590ed59cc865c9 " + get_file_path_for_entry_1().string();
 }
 
-extern const hc::snapshot_entry& get_entry_2() { return entry2; }
 const fs::path get_file_path_for_entry_2() { return current_test_dir() / fs::path( "dir1/file1_1.txt" ); }
+extern const hc::snapshot_entry get_entry_2()
+{
+    int64_t ts = snapshot_ts_to_int64( "2020-02-26 21:14:35", 437918 );
+    return hc::snapshot_entry( "b02e620a8f879bfcebb92357a6075c26", ts, 0 );
+}
 extern const std::string get_string_for_entry_2()
 {
     return "2020-02-26 21:14:35.437918 b02e620a8f879bfcebb92357a6075c26 " + get_file_path_for_entry_2().string();

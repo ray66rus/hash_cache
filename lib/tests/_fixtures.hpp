@@ -38,11 +38,11 @@ extern const std::string test_file_1_digest();
 extern const fs::path create_empty_file();
 extern const std::string empty_file_digest();
 
-extern const hashcache::snapshot_entry& get_entry_1();
+extern const hashcache::snapshot_entry get_entry_1();
 extern const std::string get_string_for_entry_1();
 extern const fs::path get_file_path_for_entry_1();
 
-extern const hashcache::snapshot_entry& get_entry_2();
+extern const hashcache::snapshot_entry get_entry_2();
 extern const std::string get_string_for_entry_2();
 extern const fs::path get_file_path_for_entry_2();
 
