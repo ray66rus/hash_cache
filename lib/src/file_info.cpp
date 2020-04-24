@@ -91,7 +91,8 @@ void file_info::_generate_digest_byte_array( fs::path const& file_name, unsigned
 }
 
 #ifdef _WIN32
-int64_t inline win_filetime_to_ms_from_epoch(FILETIME& ft) {
+int64_t inline win_filetime_to_ms_from_epoch(FILETIME& ft)
+{
     ULARGE_INTEGER ft_64;
 
     ft_64.LowPart = ft.dwLowDateTime;

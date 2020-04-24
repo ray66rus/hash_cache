@@ -53,8 +53,8 @@ bool shapshot_entry_string::_datetime_format_ok( std::string const& date, std::s
 int64_t shapshot_entry_string::_ts_from_string( const std::string& ts_str )
 {
     std::stringstream ss( ts_str );
-
     std::tm tm {};
+    tm.tm_isdst = -1;
 
     ss >> std::get_time( &tm, "%Y-%m-%d %H:%M:%S." );
     auto ts_timepoint = chrono::system_clock::from_time_t( std::mktime( &tm ) );

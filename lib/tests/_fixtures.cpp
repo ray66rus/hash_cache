@@ -62,8 +62,9 @@ static const std::vector<std::string> normal_snapshot_vector {
 int64_t snapshot_ts_to_int64( std::string const& datetime, int64_t msec )
 {
     std::stringstream ss( datetime );
-
     std::tm tm {};
+
+    tm.tm_isdst = -1
     ss >> std::get_time( &tm, "%Y-%m-%d %H:%M:%S" );
 
     auto filetime = chrono::system_clock::from_time_t( std::mktime( &tm ) );
