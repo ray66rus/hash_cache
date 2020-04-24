@@ -110,6 +110,11 @@ void inline ms_from_epoch_to_win_filetime(int64_t ms_from_epoch, FILETIME& ft)
 }
 #endif
 
+// Visual Studio 2019 implementation of std::filesystem:file_time_type is
+// broken and inconsistent with the std::chrono::system_clock.
+// To implement file modification times serialization/deserialization
+// separate wrapper was made for windows platform
+
 int64_t file_info::last_write_time( fs::path const& file_name )
 {
 #ifdef _WIN32

@@ -25,7 +25,7 @@ generate_export_header(obj_hash_snapshot
         BASE_NAME hash_snapshot
         )
 
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL 1.0.1 REQUIRED)
 
 set(INCLUDES
         ${CMAKE_CURRENT_BINARY_DIR}
