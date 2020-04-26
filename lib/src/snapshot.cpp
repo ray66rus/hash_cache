@@ -37,30 +37,35 @@ void snapshot::scan_working_dir()
     fs::recursive_directory_iterator end;
 
     for( auto i = begin; i != end; ++i ) {
-        auto const& path = i->path();
-        std::error_code ec;
+        _process_filesystem_object( i ); // side-effect: changes parameter, prohibits recursion to dirs starting with "."
+    }
+}
 
-        try {
-            if ( path.filename().string()[ 0 ] == '.' ) {
-                i.disable_recursion_pending();
-                continue;
-            }
+void snapshot::_process_filesystem_object( fs::recursive_directory_iterator& i )
+{
+    auto const& path = i->path();
+    std::error_code ec;
 
-            if( fs::is_directory( path, ec ) ) {
-                continue;
-            } else if( ec ) {
-                std::cerr << "Can't check data for path " << path << ": " << ec.message() << std::endl;
-                continue;
-            }
-
-            _update_meta_or_create_entry( path );
-
-        } catch( hash_snapshot_exception const& e ) {
-            std::cerr << "Can't get info for file " << path << ". " << e.what() << std::endl;
-        } catch (...) {
-            std::cerr << "Can't process filesystem path for unknown reason" << std::endl;
-            continue;
+    try {
+        if ( path.filename().string()[ 0 ] == '.' ) {
+            i.disable_recursion_pending();
+            return;
         }
+
+        if( fs::is_directory( path, ec ) ) {
+            return;
+        } else if( ec ) {
+            std::cerr << "Can't check data for path " << path << ": " << ec.message() << std::endl;
+            return;
+        }
+
+        _update_meta_or_create_entry( path );
+
+    } catch( hash_snapshot_exception const& e ) {
+        std::cerr << "Can't get info for file " << path << ". " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Can't process filesystem path for unknown reason" << std::endl;
+        return;
     }
 }
 
@@ -83,18 +88,7 @@ std::vector<std::string> snapshot::modified_files_list()
         return {};
     }
 
-    return m_storage.get_ts_changed_files_list();
-}
-
-void snapshot::fix_file( const std::string& file_name )
-{
-    file_info info( _full_file_name( file_name ) );
-
-    if( is_file_contents_changed( file_name, info ) ) {
-        update_file_digest( file_name, info );
-    } else {
-        revert_file_ts( file_name );
-    }
+    return m_storage.get_changed_mtime_entries_list();
 }
 
 bool snapshot::is_file_contents_changed( const std::string& file_name )
@@ -108,7 +102,7 @@ bool snapshot::is_file_contents_changed( const std::string& file_name, file_info
     bool res = false;
 
     try {
-        res = m_storage.is_file_contens_changed( file_name, file_info.get_digest() );
+        res = m_storage.is_entry_digest_differs( file_name, file_info.get_digest() );
     } catch( std::out_of_range ) {
         __DEBUG_MSG( "entry for file name \"" +  file_name + "\" not found!" );
     } catch ( hash_snapshot_exception const& e ) {
@@ -118,12 +112,12 @@ bool snapshot::is_file_contents_changed( const std::string& file_name, file_info
     return res;
 }
 
-void snapshot::revert_file_ts( const std::string& file_name )
+void snapshot::revert_file_mtime( const std::string& file_name )
 {
     fs::path full_file_name = _full_file_name( file_name );
 
     try {
-        std::int64_t ts = m_storage.get_saved_file_ts( file_name );
+        std::int64_t ts = m_storage.get_entry_mtime( file_name );
         file_info::last_write_time( full_file_name, ts );
 
         file_info info( full_file_name );
@@ -153,9 +147,20 @@ void snapshot::update_file_digest( const std::string &file_name, file_info& file
     }
 }
 
+void snapshot::fix_file( const std::string& file_name ) // Create file_info object once for both check and fix ops (if fix is needed)
+{
+    file_info info( _full_file_name( file_name ) );
+
+    if( is_file_contents_changed( file_name, info ) ) {
+        update_file_digest( file_name, info );
+    } else {
+        revert_file_mtime( file_name );
+    }
+}
+
 void snapshot::save( void )
 {
-    m_storage.save( m_last_scan_ts );
+    m_storage.save( m_last_scan_ts );  // Don't save files that were deleted before the last scan
 }
 
 }

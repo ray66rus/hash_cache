@@ -249,7 +249,7 @@ Parameters:
 
 * file_name: file path to check (relative to the working directory)
 
-##### void hashcache::revert_file_ts( const std::string& file_name )
+##### void hashcache::revert_file_mtime( const std::string& file_name )
 
 Sets file modification time to the value from the snapshot file. Parameters:
 
@@ -273,7 +273,7 @@ Saves the snapshot file. Should be called before the object destruction, otherwi
     if( is_file_contents_changed( file_name, info ) ) {
     	update_file_digest( file_name, info );
     } else {
-    	revert_file_ts( file_name );
+    	revert_file_mtime( file_name );
     }
 
 Works more effective becase calculates file hashsum only once.
@@ -288,7 +288,7 @@ Works more effective becase calculates file hashsum only once.
         if( sshot.is_file_contents_changed( file_name ) ) {
              sshot.update_file_digest( file_name );
         } else {
-             sshot.revert_file_ts( file_name );
+             sshot.revert_file_mtime( file_name );
         }
     }
 

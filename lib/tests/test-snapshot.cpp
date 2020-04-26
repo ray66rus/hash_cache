@@ -90,7 +90,7 @@ SCENARIO( "logical workflow errors", "[snapshot]" ) {
 
         WHEN( "trying to revert ts of not existing file" ) {
             THEN( "silently do nothing" ) {
-                REQUIRE_NOTHROW( sh.revert_file_ts( "_NONEXISTENT_" ) );
+                REQUIRE_NOTHROW( sh.revert_file_mtime( "_NONEXISTENT_" ) );
             }
         }
     }
@@ -193,7 +193,7 @@ SCENARIO( "normal workflow", "[snapshot]" ) {
                                 if( fn == modified_file ) {
                                     sh.update_file_digest( fn );
                                 } else {
-                                    sh.revert_file_ts( fn );
+                                    sh.revert_file_mtime( fn );
                                 }
                             }
 

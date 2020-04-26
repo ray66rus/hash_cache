@@ -48,10 +48,8 @@ void snapshot_storage::add_entry( const std::string& line )
         snapshot_entry entry( entry_string );
 
         add_entry( entry_string.get_filename(), entry );
-
     } catch( const hash_snapshot_exception& e ) {
         std::cerr << "Error adding snapshot entry. " << e.what() << std::endl;
-
     }
 }
 
@@ -64,21 +62,21 @@ void snapshot_storage::update_entry_metadata( const std::string &file_name, cons
 {
     auto& entry = m_storage.at( file_name );
     entry.last_seen = _HASH_SNAPSHOT_TIMET_NOW;
-    entry.ts_changed = ( entry.ts != data.get_ts() );
+    entry.mtime_changed = ( entry.mtime != data.get_ts() );
 }
 
-std::vector<std::string> const snapshot_storage::get_ts_changed_files_list()
+std::vector<std::string> const snapshot_storage::get_changed_mtime_entries_list()
 {
     std::vector<std::string> res;
 
     std::for_each( m_storage.begin(), m_storage.end(), [ &res ]( auto const& it ) {
-        if( it.second.ts_changed ) res.push_back( it.first );
+        if( it.second.mtime_changed ) res.push_back( it.first );
     } );
 
     return res;
 }
 
-bool snapshot_storage::is_file_contens_changed( const std::string& file_name, const std::string& digest )
+bool snapshot_storage::is_entry_digest_differs( const std::string& file_name, const std::string& digest )
 {
     auto const& entry = m_storage.at( file_name );
     return entry.digest != digest;
@@ -109,10 +107,10 @@ void snapshot_storage::add_entry( const std::string& file_name, file_info& data 
     add_entry( file_name, entry );
 }
 
-int64_t snapshot_storage::get_saved_file_ts( const std::string& file_name )
+int64_t snapshot_storage::get_entry_mtime( const std::string& file_name )
 {
     auto const& entry = m_storage.at( file_name );
-    return entry.ts;
+    return entry.mtime;
 }
 
 }

@@ -28,7 +28,7 @@ file_info::file_info( fs::path const& file_name )
     try {
         m_digest = "";
         m_filename = file_name;
-        m_ts = last_write_time( file_name );
+        m_mtime = last_write_time( file_name );
     } catch( fs::filesystem_error const &e ) {
         throw hash_snapshot_exception( e.what(), hash_snapshot_exception::error_type::IO_ERROR );
     }

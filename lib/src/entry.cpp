@@ -24,15 +24,15 @@ shapshot_entry_string::shapshot_entry_string( const std::string& line )
     std::getline( iss, m_digest, ' ' );
     std::getline( iss, m_filename );
 
-    if( m_digest == "" || m_filename == "" || _datetime_format_ok( date, time ) ) {
+    if( m_digest == "" || m_filename == "" || _is_datetime_format_bad( date, time ) ) {
         throw hash_snapshot_exception( "Invalid entry in snapshot file: \"" + line + "\"",
             hash_snapshot_exception::error_type::PARSE_ERROR );
     }
 
-    m_ts = _ts_from_string( date + " " + time );
+    m_mtime = _mtime_from_string( date + " " + time );
 }
 
-bool shapshot_entry_string::_datetime_format_ok( std::string const& date, std::string const& time )
+bool shapshot_entry_string::_is_datetime_format_bad( std::string const& date, std::string const& time )
 {
     if( date.find_first_not_of( "0123456789-" ) != std::string::npos ) {
         return true;
@@ -50,7 +50,7 @@ bool shapshot_entry_string::_datetime_format_ok( std::string const& date, std::s
     return false;
 }
 
-int64_t shapshot_entry_string::_ts_from_string( const std::string& ts_str )
+int64_t shapshot_entry_string::_mtime_from_string( const std::string& ts_str )
 {
     std::stringstream ss( ts_str );
     std::tm tm {};
@@ -69,14 +69,14 @@ int64_t shapshot_entry_string::_ts_from_string( const std::string& ts_str )
 
 shapshot_entry_string::shapshot_entry_string( const std::string& file_name, const snapshot_entry& entry )
 {
-    m_ts = entry.ts;
+    m_mtime = entry.mtime;
     m_digest = entry.digest;
     m_filename = file_name;
 }
 
 shapshot_entry_string::operator std::string() const
 {
-    chrono::microseconds msec{ m_ts };
+    chrono::microseconds msec{ m_mtime };
     chrono::seconds sec = chrono::duration_cast<chrono::seconds>( msec );
     chrono::time_point<chrono::system_clock> ts_timepoint( sec );
     std::time_t ts_timet = chrono::system_clock::to_time_t( ts_timepoint );

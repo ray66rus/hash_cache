@@ -8,7 +8,7 @@ TEST_CASE( "Snapshot entry_string/entry creation", "[entry]" ) {
 
         snapshot_entry empty;
         REQUIRE( empty.last_seen == 0 );
-        REQUIRE_FALSE( empty.ts_changed );
+        REQUIRE_FALSE( empty.mtime_changed );
 
     }
 
@@ -60,9 +60,9 @@ TEST_CASE( "Snapshot entry_string/entry conversion test", "[entry]" ) {
         snapshot_entry test_entry( es1 );
 
         REQUIRE( test_entry.digest == entry1.digest );
-        REQUIRE( test_entry.ts == entry1.ts );
+        REQUIRE( test_entry.mtime == entry1.mtime );
         REQUIRE( test_entry.last_seen == entry1.last_seen );
-        REQUIRE_FALSE ( test_entry.ts_changed );
+        REQUIRE_FALSE ( test_entry.mtime_changed );
 
     }
 

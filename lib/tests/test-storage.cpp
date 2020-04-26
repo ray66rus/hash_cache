@@ -102,7 +102,7 @@ SCENARIO( "Storage entries manipulation", "[storage]" ) {
             ss.add_entry( entry_4_file_name.string(), test_info_2 );
 
             THEN( "changed ts list is empty" ) {
-                std::vector<std::string> const changed_files_1 = ss.get_ts_changed_files_list();
+                std::vector<std::string> const changed_files_1 = ss.get_changed_mtime_entries_list();
                 REQUIRE( changed_files_1.empty() );
 
                 AND_WHEN( "some files changed" ) {
@@ -118,7 +118,7 @@ SCENARIO( "Storage entries manipulation", "[storage]" ) {
                         ss.update_entry_metadata( entry_3_file_name.string(), test_info_3_new );
                         ss.update_entry_metadata( entry_4_file_name.string(), test_info_4_new );
 
-                        std::vector<std::string> const changed_files_2 = ss.get_ts_changed_files_list();
+                        std::vector<std::string> const changed_files_2 = ss.get_changed_mtime_entries_list();
 
                         THEN( "changed ts list is not empty" ) {
                             REQUIRE( changed_files_2.size() == 2 ); // entries 1 and 3
@@ -127,9 +127,9 @@ SCENARIO( "Storage entries manipulation", "[storage]" ) {
                         AND_THEN( "changes are consistent with what we've done to files" ) {
                             for( auto file_name: changed_files_2 ) {
                                 if( file_name == entry_1_file_name ) {
-                                    REQUIRE( ss.is_file_contens_changed( file_name, test_info_1_new.get_digest() ) );
+                                    REQUIRE( ss.is_entry_digest_differs( file_name, test_info_1_new.get_digest() ) );
                                 } else if( file_name == entry_3_file_name ) {
-                                    REQUIRE_FALSE( ss.is_file_contens_changed( file_name, test_info_3_new.get_digest() ) );
+                                    REQUIRE_FALSE( ss.is_entry_digest_differs( file_name, test_info_3_new.get_digest() ) );
                                 } else {
                                     REQUIRE( false );
                                 }
@@ -259,7 +259,7 @@ SCENARIO( "existing snapshot storage entries updating and saving", "[storage]" )
 
                 // Check that we really change the digest for this entry
                 std::string new_digest = entry_1_info.get_digest();
-                REQUIRE( ss.is_file_contens_changed( entry_1_file_name.string(), new_digest ) );
+                REQUIRE( ss.is_entry_digest_differs( entry_1_file_name.string(), new_digest ) );
 
                 ss.update_entry( entry_1_file_name.string(), entry_1_info );
 
@@ -283,7 +283,7 @@ SCENARIO( "existing snapshot storage entries updating and saving", "[storage]" )
                         ss_new.init( minimal_snapshot_file_path() );
                         ss_new.load();
 
-                        REQUIRE_FALSE( ss_new.is_file_contens_changed( entry_1_file_name.string(), new_digest ) );
+                        REQUIRE_FALSE( ss_new.is_entry_digest_differs( entry_1_file_name.string(), new_digest ) );
 
                     }
 

@@ -15,7 +15,7 @@ int main()
         if( sshot.is_file_contents_changed( file_name ) ) {
             sshot.update_file_digest( file_name );
         } else {
-            sshot.revert_file_ts( file_name );
+            sshot.revert_file_mtime( file_name );
         }
     }
 
