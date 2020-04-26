@@ -1,0 +1,7 @@
+// the configured options and settings for hashcache utility
+
+#define HC_VER_MAJOR @HashCache_VERSION_MAJOR@
+#define HC_VER_MINOR @HashCache_VERSION_MINOR@
+#define HC_VER_PATCH @HashCache_VERSION_PATCH@
+
+#define HC_UTILITY_NAME "@CMAKE_PROJECT_NAME@"

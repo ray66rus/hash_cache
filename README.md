@@ -10,7 +10,7 @@ This sofrware is written as a cross-platrofm application, so it should builds an
 
 ### Building requirements
 
-For building `hash_snapshot` library and `hashcache` utility you should have:
+For building `hash_snapshot` library and `HashCache` utility you should have:
 
 *   CPP-compiler, supporting C\++17 revision of c++
 *   CMake: version >= 3.8
@@ -96,7 +96,7 @@ then build and install:
     $ cmake -Bbuild -H. -DBUILD_TESTING=OFF
     $ sudo cmake --build build/ --target install
 
-#### Building the hashcache utility and hash_snapshot library
+#### Building the HashCache utility and hash_snapshot library
 
 Clone the `hash_cache` repository
 
@@ -142,17 +142,17 @@ Install it either with `Chocolatey` package manager (recommended) or any other m
 `hash_snapshot` library depends on `OpenSSL` library and `Catch2` test framework. The easiest way to install them is to use [Vcpkg](https://github.com/microsoft/vcpkg) package manager.
 
 To install `vcpkg`, run `Git CMD` command from Windows Start menu, and run the following commands in the console:
- 
+
     > git clone https://github.com/Microsoft/vcpkg.git
     > cd vcpkg
     > bootstrap-vcpkg.bat
     > vcpkg integrate install
 
 After `vcpkg` will be installed (it required `Administrator` privileges), install `openssl` and `catch2` packages:
-    
+
     > vcpkg install openssl catch2 --triplet x64-windows
 
-#### Building the hashcache utility and hash_snapshot library
+#### Building the HashCache utility and hash_snapshot library
 
 1. Open Visual Studio
 2. Select “Clone or check out code”
@@ -170,7 +170,7 @@ By default, “Debug” configuration is built. To build “Release”, after th
 
 After that it should be possible to select “x64-Release” configuration from “Configuration” drop-down. Re-build cmake cache (“Project”->”CMake Cache (x64-Release Only)”->”Delete cache”, “Project”->”Generate Cache for HashCache”) and build the project.
 
-## Using hashcache utility
+## Using HashCache utility
 
 ### Run requirements
 To run the utility you should have `openssl` and `hash_snapshot` libraries installed in your system.
@@ -180,7 +180,7 @@ To install `openssl` library for ubuntu, run
 
     $ sudo apt install openssl
 
-`hash_snapshot` library can be installed using as discribed in [Building the hashcache utility and hash_snapshot library](#building-the-hashcache-utility-and-hash_snapshot-library) section.
+`hash_snapshot` library can be installed using as discribed in [Building the HashCache utility and hash_snapshot library](#building-the-hashcache-utility-and-hash_snapshot-library) section.
 
 #### Windows 10
 To install `openssl` library for Windows you can use any binary distribution for Windows x64 platform - for example, you can download and install it from [https://slproweb.com/products/Win32OpenSSL.html](https://slproweb.com/products/Win32OpenSSL.html).
@@ -191,11 +191,11 @@ Copy executable file to the directory for which you want to make a snapshot and 
 
 Linux:
 
-    > $ ./hashcache
- 
+    > $ ./HashCache
+
 Windows:
 
-    > hashcache.exe
+    > HashCache.exe
 
 First run can take a lot of time - depending on the amount of files and sub-directories in the working directory. After the first run a file named `.hash_cache.txt` will be created in the working directory. Don’t delete or manually edit this file - if you delete it, the snapshot information will be lost and the next run of the utility will need to re-create this file.
 
@@ -223,7 +223,7 @@ Parameters:
 * file_name: name of the snapshot file
 * dir: working directory to scan (by default the current directory is used)
 * follow_symlinks: whether to follow symlinks
-    
+
 #### Methods
 
 ##### void hashcache::scan_working_dir()
@@ -234,9 +234,9 @@ New files, created after the last scan, are silently added to the snapshot.
 If no snapshot is found, creates it.
 
 ##### std::vector<std::string> hashcache::modified_files_list()
-Gets the list of file pathes which modification times are different from the saved in the snapshot file. 
+Gets the list of file pathes which modification times are different from the saved in the snapshot file.
 
-New files, created after the last scan, are not appeared in this list. All pathes are relative to the 
+New files, created after the last scan, are not appeared in this list. All pathes are relative to the
 working directory.
 
 This function should be called after calling `scan_working_dir()`. If there was no call to `scan_working_dir()` prior the calling this function, empty list will be returned and the warning will be printed to the standard error stream.
@@ -281,9 +281,9 @@ Works more effective becase calculates file hashsum only once.
 ### Usage example
 
     hashcache::snapshot sshot(".hash_cache.txt");
-    
+
     sshot.scan_working_dir();
-    
+
     for( auto file_name: sshot.modified_files_list() ) {
         if( sshot.is_file_contents_changed( file_name ) ) {
              sshot.update_file_digest( file_name );
@@ -300,7 +300,7 @@ Works more effective becase calculates file hashsum only once.
 *   Fix “follow_symlinks” option - check for cyclic links structure and test other edge cases
 
 ## License
-`hashcache` utility and `hash_snapshot` library are available under [Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
+`HashCache` utility and `hash_snapshot` library are available under [Mozilla Public License Version 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
 
 This software uses [OpenSSL library](https://www.openssl.org/), which is available under [Apache License Version 2.0](https://www.openssl.org/source/apache-license-2.0.txt)
 

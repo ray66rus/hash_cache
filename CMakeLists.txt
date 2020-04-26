@@ -5,8 +5,12 @@ project(HashCache VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(hashcache hashcache.cpp)
+add_executable(HashCache hashcache.cpp)
 
 add_subdirectory(lib)
 
-target_link_libraries(hashcache hash_snapshot)
+configure_file(hashcache.h.in hashcache.h)
+
+target_include_directories(HashCache PRIVATE ${PROJECT_BINARY_DIR})
+
+target_link_libraries(HashCache hash_snapshot)
