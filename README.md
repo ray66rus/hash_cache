@@ -1,6 +1,6 @@
 # HASH CACHE
 
-`hascahe` utility is a small program that creates in the given directory “snapshot” file, containing hashsums and modification times for all files in that directory and it’s subdirectories (excluding “hidden” files and directories, i.e. the ones that starts with “.”). When this utility runs, it compares current state of the files, found in this directory and its subdirectories, with the data in this snapshot file and finds files, which modification time has changed. If such a file was really changed (hashsum is different from the state, fixed in the snapshot file), its hashsum and modification time in the snapshot updated. Otherwise, its modification time forced to that from the snapshot.
+`HashCache` utility is a small program that creates in the given directory “snapshot” file, containing hashsums and modification times for all files in that directory and it’s subdirectories (excluding “hidden” files and directories, i.e. the ones that starts with “.”). When this utility runs, it compares current state of the files, found in this directory and its subdirectories, with the data in this snapshot file and finds files, which modification time has changed. If such a file was really changed (hashsum is different from the state, fixed in the snapshot file), its hashsum and modification time in the snapshot updated. Otherwise, its modification time forced to that from the snapshot.
 
 This utility is based on the `hash_snapshot` library that is also in this repository.
 
