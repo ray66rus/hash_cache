@@ -1,2 +1,4 @@
 .vscode/*
+lib/build/*
+lib/test/build/*
 build/*

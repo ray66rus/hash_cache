@@ -13,9 +13,8 @@ This sofrware is written as a cross-platrofm application, so it should builds an
 For building `hash_snapshot` library and `HashCache` utility you should have:
 
 *   CPP-compiler, supporting C\++17 revision of c++
-*   CMake: version >= 3.8
+*   CMake: version >= 3.14
 *   OpenSSL library, version >= 1.0.1
-*   Catch2 test framework
 *   Ninja build system, version >= 1.3.0
 
 ### Ubuntu 16
@@ -80,21 +79,11 @@ To install gcc/cmake/ninja you can run `install-toolchain.sh` script from the ro
 
 #### Build dependencies
 
-`hash_snapshot` library depends on `OpenSSL` library and `Catch2` test framework.
+`hash_snapshot` library depends on `OpenSSL` library.
 
 To install OpenSSL development package, run
 
     $ sudo apt install -y libssl-dev
-
-To install Catch2 test framework clone it from the github repository:
-
-    $ git clone https://github.com/catchorg/Catch2.git
-
-then build and install:
-
-    $ cd Catch2
-    $ cmake -Bbuild -H. -DBUILD_TESTING=OFF
-    $ sudo cmake --build build/ --target install
 
 #### Building the HashCache utility and hash_snapshot library
 
@@ -139,7 +128,7 @@ Install it either with `Chocolatey` package manager (recommended) or any other m
 
 #### Build dependencies
 
-`hash_snapshot` library depends on `OpenSSL` library and `Catch2` test framework. The easiest way to install them is to use [Vcpkg](https://github.com/microsoft/vcpkg) package manager.
+`hash_snapshot` library depends on `OpenSSL` library. The easiest way to install it is to use [Vcpkg](https://github.com/microsoft/vcpkg) package manager.
 
 To install `vcpkg`, run `Git CMD` command from Windows Start menu, and run the following commands in the console:
 
@@ -148,9 +137,9 @@ To install `vcpkg`, run `Git CMD` command from Windows Start menu, and run the f
     > bootstrap-vcpkg.bat
     > vcpkg integrate install
 
-After `vcpkg` will be installed (it required `Administrator` privileges), install `openssl` and `catch2` packages:
+After `vcpkg` will be installed (it required `Administrator` privileges), install `openssl` package:
 
-    > vcpkg install openssl catch2 --triplet x64-windows
+    > vcpkg install openssl --triplet x64-windows
 
 #### Building the HashCache utility and hash_snapshot library
 
