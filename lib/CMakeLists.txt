@@ -77,6 +77,10 @@ target_compile_definitions(hash_snapshot_static
         HASH_SNAPSHOT_STATIC_DEFINE
         )
 
+target_include_directories(hash_snapshot_static
+        INTERFACE ${INCLUDES}
+        )
+
 target_link_libraries(hash_snapshot_static
         PRIVATE
         OpenSSL::Crypto
